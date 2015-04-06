@@ -1,17 +1,12 @@
-(function(){if (Meteor.isClient) {
+(function(){Networks = new Mongo.Collection("networks");
+
+if (Meteor.isClient) {
 	// counter starts at 0
 	Session.setDefault('counter', 0);
 
-	Template.hello.helpers({
-		counter: function () {
-			return Session.get('counter');
-		}
-	});
-
-	Template.hello.events({
-		'click button': function () {
-		// increment the counter when button is clicked
-			Session.set('counter', Session.get('counter') + 1);
+	Template.networks.helpers({
+		items: function () {
+			return Networks.find();
 		}
 	});
 }
@@ -23,7 +18,13 @@ if (Meteor.isServer) {
 	Meteor.startup(function () {
 		// code to run on server at startup
 		function parseCsvFile(fileName){
-			var stream = fs.createReadStream('/' + fileName);
+			var meteor_root = Npm.require('fs').realpathSync( process.cwd() + '/../' );
+			var application_root = Npm.require('fs').realpathSync( meteor_root + '/../' );
+			// if running on dev mode
+			if( Npm.require('path').basename( Npm.require('fs').realpathSync( meteor_root + '/../../../' ) ) == '.meteor' ){
+				application_root =  Npm.require('fs').realpathSync( meteor_root + '/../../../../' );
+			}
+			var stream = fs.createReadStream(application_root + '/' + fileName);
 			var iteration = 0, header = [], buffer = "";
 			var pattern = /(?:^|,)("(?:[^"]+)*"|[^,]*)/g;
 			stream.addListener('data', function(data){
@@ -32,7 +33,10 @@ if (Meteor.isServer) {
 				parts.forEach(function(d, i){
 					if(i == parts.length-1) return;
 					if(iteration++ == 0 && i == 0){
-						header = d.split(pattern);
+						header = d.split(pattern).map(function(el) {
+							var str = el.replace('.', '_');
+							return str;
+						});
 					}else{
 						results.push(buildRecord(d));
 					}
@@ -44,14 +48,13 @@ if (Meteor.isServer) {
 				var record = {};
 				str.split(pattern).forEach(function(value, index){
 					if(header[index] != '')
-						record[header[index].toLowerCase()] = value.replace(/"/g, '');
+						record[header[index]] = value.replace(/"/g, '');
 				})
 				return record;
 			}
 		}
 
-		parseCsvFile('test.csv');
-		Networks = new Mongo.Collection("networks");
+		parseCsvFile('data.csv');
 		Networks.insert(results);
 	});
 }

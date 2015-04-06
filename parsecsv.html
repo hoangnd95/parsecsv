@@ -1,14 +1,16 @@
 <head>
-  <title>parsecsv</title>
+  <title>Parse CSV</title>
 </head>
 
 <body>
-  <h1>Welcome to Meteor!</h1>
-
-  {{> hello}}
+  <h1>View Networks</h1>
+  {{> networks}}
 </body>
 
-<template name="hello">
-  <button>Click Me</button>
-  <p>You've pressed the button {{counter}} times.</p>
+<template name="networks">
+  <ul>
+    {{#each headers}}
+		<p>{{this}}</p>
+    {{/each}}
+  </ul>
 </template>
