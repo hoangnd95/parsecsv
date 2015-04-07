@@ -8,9 +8,20 @@
 </body>
 
 <template name="networks">
-  <ul>
-    {{#each items}}
-		<p>{{this}}</p>
-    {{/each}}
-  </ul>
+  <table>
+	<thead>
+		<tr>
+			{{#each headers}}
+			<th>{{this}}</th>
+			{{/each}}
+		</tr>
+	</thead>
+	<tbody>
+		{{#each items}}
+		<tr>
+		<td>{{this.Path}}</td>
+		</tr>
+		{{/each}}
+	</tbody>
+  </table>
 </template>

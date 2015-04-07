@@ -1,20 +1,30 @@
-Networks = new Mongo.Collection("networks");
-
 if (Meteor.isClient) {
-	// counter starts at 0
-	Session.setDefault('counter', 0);
-
+	Networks = new Mongo.Collection("data11");
+	
 	Template.networks.helpers({
 		items: function () {
 			return Networks.find();
-		}
+		},
+		headers: function () {
+			var index = [];
+			var ele = Networks.findOne();
+			for (i in ele) {
+				if (!ele.hasOwnProperty(i) || i == '_id') continue;
+				index.push(i);
+			}
+			
+			return index;
+		},
+		index: 'Path'
+		
 	});
+
 }
 
 if (Meteor.isServer) {
 	var fs = Npm.require('fs');
-	var sys = Npm.require('fs');
 	var results = [];
+	
 	Meteor.startup(function () {
 		// code to run on server at startup
 		function parseCsvFile(fileName){
@@ -34,7 +44,7 @@ if (Meteor.isServer) {
 					if(i == parts.length-1) return;
 					if(iteration++ == 0 && i == 0){
 						header = d.split(pattern).map(function(el) {
-							var str = el.replace('.', '_');
+							var str = el.replace(new RegExp("\\.","g"), "_");
 							return str;
 						});
 					}else{
@@ -47,14 +57,20 @@ if (Meteor.isServer) {
 			function buildRecord(str){
 				var record = {};
 				str.split(pattern).forEach(function(value, index){
-					if(header[index] != '')
+					if(header[index] != '') {
 						record[header[index]] = value.replace(/"/g, '');
+					}
 				})
 				return record;
 			}
 		}
 
 		parseCsvFile('data.csv');
-		Networks.insert(results);
+		Networks = new Mongo.Collection("data11");
+		console.log(results);
+		for (network in results) {
+			if (!results.hasOwnProperty(network)) continue;
+		//	Networks.insert(results[network]);
+		}
 	});
 }
