@@ -1,5 +1,5 @@
 if (Meteor.isClient) {
-	Networks = new Mongo.Collection("data11");
+	Networks = new Mongo.Collection("data");
 	
 	Template.networks.helpers({
 		items: function () {
@@ -14,8 +14,7 @@ if (Meteor.isClient) {
 			}
 			
 			return index;
-		},
-		index: 'Path'
+		}
 		
 	});
 
@@ -66,7 +65,7 @@ if (Meteor.isServer) {
 		}
 
 		parseCsvFile('data.csv');
-		Networks = new Mongo.Collection("data11");
+		Networks = new Mongo.Collection("data");
 		console.log(results);
 		for (network in results) {
 			if (!results.hasOwnProperty(network)) continue;
