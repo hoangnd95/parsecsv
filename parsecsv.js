@@ -70,7 +70,7 @@ if (Meteor.isServer) {
 		console.log(results);
 		for (network in results) {
 			if (!results.hasOwnProperty(network)) continue;
-		//	Networks.insert(results[network]);
+			Networks.insert(results[network]);
 		}
 	});
 }
